@@ -14,17 +14,17 @@ import com.example.renpy.viewmodel.RenPyViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: RenPyViewModel by viewModels()
+  private val viewModel: RenPyViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    RenPyScreen(viewModel = viewModel)
-                }
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          RenPyScreen(viewModel = viewModel)
         }
+      }
     }
+  }
 }

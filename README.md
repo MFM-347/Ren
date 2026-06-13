@@ -13,24 +13,25 @@ A bulk file-renaming app, ported from the original Python CLI to Jetpack Compose
 
 ## What changed vs. the CLI
 
-| CLI concept | Android equivalent |
-|---|---|
+| CLI concept                                     | Android equivalent                                                                                                                              |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `directory` positional arg, raw filesystem path | SAF folder picker (`ActivityResultContracts.OpenDocumentTree`); access persisted via `takePersistableUriPermission` so it survives app restarts |
-| `base_name` positional arg | Text field |
-| `-r/--order` (`alphabet`/`new`/`old`) | Dropdown, same three options, "old" (oldest-first) remains the default |
-| `-s/--simulate` | Removed as a flag — **preview is now always shown first**, and renames only happen after the user taps "Confirm renames" |
-| `os.rename` per file | Two-pass rename via `DocumentFile.renameTo` (see below) |
+| `base_name` positional arg                      | Text field                                                                                                                                      |
+| `-r/--order` (`alphabet`/`new`/`old`)           | Dropdown, same three options, "old" (oldest-first) remains the default                                                                          |
+| `-s/--simulate`                                 | Removed as a flag — **preview is now always shown first**, and renames only happen after the user taps "Confirm renames"                        |
+| `os.rename` per file                            | Two-pass rename via `DocumentFile.renameTo` (see below)                                                                                         |
 
 ## Why a two-pass rename
 
 The original script does `os.rename(old, new)` in a single pass. If the target
 name set overlaps the source name set — e.g. renaming `b.jpg` to `photo-1.jpg`
-when `a.jpg` is *also* being renamed to `photo-1.jpg` momentarily, or when a
+when `a.jpg` is _also_ being renamed to `photo-1.jpg` momentarily, or when a
 leftover `photo-3.jpg` already exists in the folder — this can throw or silently
 clobber a file, and SAF's `DocumentFile.renameTo` has similar provider-dependent
 quirks (some providers append a `(1)` suffix instead of failing).
 
 `FileRenamer.applyRenames` avoids this by:
+
 1. Renaming every file that needs to change to a unique temporary name
    (`__renpy_tmp_<timestamp>_<index>`).
 2. Renaming each temp file to its real target name.

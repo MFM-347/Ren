@@ -42,199 +42,189 @@ import com.example.renpy.ui.components.PreviewItem
 import com.example.renpy.viewmodel.RenPyViewModel
 
 /**
- * Top-level screen for RenPy. Mirrors the original CLI's inputs --
- * base name, target directory, and sort order -- with an additional
- * preview/confirm step required by Android's scoped storage model
- * (there is no "simulate" flag here; preview is always shown first).
+ * Top-level screen for RenPy. Mirrors the original CLI's inputs -- base name,
+ * target directory, and sort order -- with an additional preview/confirm step
+ * required by Android's scoped storage model (there is no "simulate" flag here;
+ * preview is always shown first).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenPyScreen(viewModel: RenPyViewModel) {
-    val state by viewModel.uiState.collectAsState()
+  val state by viewModel.uiState.collectAsState()
 
-    val folderPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree(),
+  val folderPicker =
+    rememberLauncherForActivityResult(
+      contract = ActivityResultContracts.OpenDocumentTree(),
     ) { uri ->
-        if (uri != null) {
-            viewModel.onFolderSelected(uri)
-        }
+      if (uri != null) {
+        viewModel.onFolderSelected(uri)
+      }
     }
 
-    var orderMenuExpanded by remember { mutableStateOf(false) }
+  var orderMenuExpanded by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("RenPy") })
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+  Scaffold(
+    topBar = { TopAppBar(title = { Text("RenPy") }) },
+  ) { padding ->
+    Column(
+      modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+      // --- Folder selection ---
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Folder", style = MaterialTheme.typography.titleSmall)
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // --- Folder selection ---
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Folder", style = MaterialTheme.typography.titleSmall)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        text = state.folderName ?: "No folder selected",
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                OutlinedButton(
-                    onClick = { folderPicker.launch(null) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(if (state.folderUri == null) "Choose folder" else "Change folder")
-                }
-            }
-
-            HorizontalDivider()
-
-            // --- Base name ---
-            OutlinedTextField(
-                value = state.baseName,
-                onValueChange = viewModel::onBaseNameChanged,
-                label = { Text("Base name") },
-                placeholder = { Text("e.g. vacation-photo") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            // --- Order selector ---
-            ExposedDropdownMenuBox(
-                expanded = orderMenuExpanded,
-                onExpandedChange = { orderMenuExpanded = it },
-            ) {
-                OutlinedTextField(
-                    value = state.order.label,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Order") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = orderMenuExpanded)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                )
-
-                DropdownMenu(
-                    expanded = orderMenuExpanded,
-                    onDismissRequest = { orderMenuExpanded = false },
-                ) {
-                    RenameOrder.entries.forEach { order ->
-                        DropdownMenuItem(
-                            text = { Text(order.label) },
-                            onClick = {
-                                viewModel.onOrderChanged(order)
-                                orderMenuExpanded = false
-                            },
-                        )
-                    }
-                }
-            }
-
-            // --- Preview button ---
-            Button(
-                onClick = viewModel::generatePreview,
-                enabled = !state.isLoadingPreview && !state.isApplying,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (state.isLoadingPreview) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(16.dp),
-                        strokeWidth = 2.dp,
-                    )
-                }
-                Text("Preview")
-            }
-
-            // --- Preview list ---
-            if (state.previews.isNotEmpty()) {
-                Text(
-                    text = "${state.previews.size} file(s) found",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Box(modifier = Modifier.weight(1f)) {
-                    LazyColumn {
-                        items(state.previews, key = { it.uri }) { preview ->
-                            PreviewItem(preview)
-                            HorizontalDivider()
-                        }
-                    }
-                }
-
-                Button(
-                    onClick = viewModel::confirmRenames,
-                    enabled = !state.isApplying,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    if (state.isApplying) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(16.dp),
-                            strokeWidth = 2.dp,
-                        )
-                    }
-                    Text("Confirm renames")
-                }
-            } else {
-                // Push remaining content to the bottom isn't strictly
-                // needed; spacer keeps layout stable when list is absent.
-                Box(modifier = Modifier.weight(1f))
-            }
+          Text(
+            text = state.folderName ?: "No folder selected",
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+          )
         }
-    }
+        OutlinedButton(
+          onClick = { folderPicker.launch(null) },
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text(
+            if (state.folderUri == null) "Choose folder" else "Change folder")
+        }
+      }
 
-    // --- Result dialog ---
-    state.result?.let { result ->
-        AlertDialog(
-            onDismissRequest = { viewModel.clearPreview() },
-            title = { Text(if (result.failures.isEmpty()) "Done" else "Completed with errors") },
-            text = {
-                Column {
-                    Text("Renamed ${result.successCount} file(s).")
-                    if (result.failures.isNotEmpty()) {
-                        Text(
-                            "Failed: ${result.failures.joinToString(", ")}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { viewModel.clearPreview() }) {
-                    Text("OK")
-                }
-            },
-        )
-    }
+      HorizontalDivider()
 
-    // --- Error dialog ---
-    state.error?.let { message ->
-        AlertDialog(
-            onDismissRequest = viewModel::dismissError,
-            title = { Text("Notice") },
-            text = { Text(message) },
-            confirmButton = {
-                TextButton(onClick = viewModel::dismissError) {
-                    Text("OK")
-                }
-            },
+      // --- Base name ---
+      OutlinedTextField(
+        value = state.baseName,
+        onValueChange = viewModel::onBaseNameChanged,
+        label = { Text("Base name") },
+        placeholder = { Text("e.g. vacation-photo") },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+
+      // --- Order selector ---
+      ExposedDropdownMenuBox(
+        expanded = orderMenuExpanded,
+        onExpandedChange = { orderMenuExpanded = it },
+      ) {
+        OutlinedTextField(
+          value = state.order.label,
+          onValueChange = {},
+          readOnly = true,
+          label = { Text("Order") },
+          trailingIcon = {
+            ExposedDropdownMenuDefaults.TrailingIcon(
+              expanded = orderMenuExpanded)
+          },
+          modifier = Modifier.fillMaxWidth().menuAnchor(),
         )
+
+        DropdownMenu(
+          expanded = orderMenuExpanded,
+          onDismissRequest = { orderMenuExpanded = false },
+        ) {
+          RenameOrder.entries.forEach { order ->
+            DropdownMenuItem(
+              text = { Text(order.label) },
+              onClick = {
+                viewModel.onOrderChanged(order)
+                orderMenuExpanded = false
+              },
+            )
+          }
+        }
+      }
+
+      // --- Preview button ---
+      Button(
+        onClick = viewModel::generatePreview,
+        enabled = !state.isLoadingPreview && !state.isApplying,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        if (state.isLoadingPreview) {
+          CircularProgressIndicator(
+            modifier = Modifier.padding(end = 8.dp).size(16.dp),
+            strokeWidth = 2.dp,
+          )
+        }
+        Text("Preview")
+      }
+
+      // --- Preview list ---
+      if (state.previews.isNotEmpty()) {
+        Text(
+          text = "${state.previews.size} file(s) found",
+          style = MaterialTheme.typography.labelMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Box(modifier = Modifier.weight(1f)) {
+          LazyColumn {
+            items(state.previews, key = { it.uri }) { preview ->
+              PreviewItem(preview)
+              HorizontalDivider()
+            }
+          }
+        }
+
+        Button(
+          onClick = viewModel::confirmRenames,
+          enabled = !state.isApplying,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          if (state.isApplying) {
+            CircularProgressIndicator(
+              modifier = Modifier.padding(end = 8.dp).size(16.dp),
+              strokeWidth = 2.dp,
+            )
+          }
+          Text("Confirm renames")
+        }
+      } else {
+        // Push remaining content to the bottom isn't strictly
+        // needed; spacer keeps layout stable when list is absent.
+        Box(modifier = Modifier.weight(1f))
+      }
     }
+  }
+
+  // --- Result dialog ---
+  state.result?.let { result ->
+    AlertDialog(
+      onDismissRequest = { viewModel.clearPreview() },
+      title = {
+        Text(if (result.failures.isEmpty()) "Done" else "Completed with errors")
+      },
+      text = {
+        Column {
+          Text("Renamed ${result.successCount} file(s).")
+          if (result.failures.isNotEmpty()) {
+            Text(
+              "Failed: ${result.failures.joinToString(", ")}",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.error,
+            )
+          }
+        }
+      },
+      confirmButton = {
+        TextButton(onClick = { viewModel.clearPreview() }) { Text("OK") }
+      },
+    )
+  }
+
+  // --- Error dialog ---
+  state.error?.let { message ->
+    AlertDialog(
+      onDismissRequest = viewModel::dismissError,
+      title = { Text("Notice") },
+      text = { Text(message) },
+      confirmButton = {
+        TextButton(onClick = viewModel::dismissError) { Text("OK") }
+      },
+    )
+  }
 }
