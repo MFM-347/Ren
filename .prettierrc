@@ -1,0 +1,4 @@
+{
+  "singleAttributePerLine": true,
+  "plugins": ["@prettier/plugin-xml"]
+}

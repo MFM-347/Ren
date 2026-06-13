@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Folder body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,38 H46 L54,48 H84 V80 H24 Z" />
+
+    <!-- Folder tab -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,32 H46 L52,40 H24 Z" />
+
+    <!-- Arrow indicating rename / transform -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M40,58 L40,66 L58,66 L58,72 L70,63 L58,54 L58,60 Z" />
+
+</vector>
