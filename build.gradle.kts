@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.diffplug.spotless.kotlin.KtfmtStep.TrailingCommaManagementStrategy
+
 plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.kotlin.android) apply false
@@ -14,6 +16,8 @@ spotless {
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
       it.setRemoveUnusedImports(true)
+      // Highlighted Change: Replaced boolean flag with the strategy enum
+      it.setTrailingCommaManagementStrategy(TrailingCommaManagementStrategy.NONE)
     }
   }
   
