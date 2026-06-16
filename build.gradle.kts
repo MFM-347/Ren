@@ -14,7 +14,6 @@ spotless {
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
       it.setRemoveUnusedImports(true)
-      it.setManageTrailingCommas(false)
     }
   }
   
