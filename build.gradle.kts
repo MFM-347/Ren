@@ -16,18 +16,20 @@ spotless {
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
       it.setRemoveUnusedImports(true)
-      it.setTrailingCommaManagementStrategy(TrailingCommaManagementStrategy.NONE)
+      it.setTrailingCommaManagementStrategy(
+        TrailingCommaManagementStrategy.NONE,
+      )
     }
   }
-  
+
   kotlinGradle {
     target("*.gradle.kts")
     ktlint()
       .setEditorConfigPath("$projectDir/.editorconfig")
       .editorConfigOverride(
         mapOf(
-          "ktlint_code_style" to "intellij_idea"
-        )
+          "ktlint_code_style" to "intellij_idea",
+        ),
       )
-    }
   }
+}
