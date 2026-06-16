@@ -11,19 +11,18 @@ plugins {
 spotless {
   kotlin {
     target("**/*.kt")
-    ktfmt("0.63").googleStyle().configure {
+    ktfmt.googleStyle().configure {
       it.setMaxWidth(80)
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
       it.setRemoveUnusedImports(true)
-      // Highlighted Change: Replaced boolean flag with the strategy enum
       it.setTrailingCommaManagementStrategy(TrailingCommaManagementStrategy.NONE)
     }
   }
   
   kotlinGradle {
     target("*.gradle.kts")
-    ktlint("1.8.0")
+    ktlint
       .setEditorConfigPath("$projectDir/.editorconfig")
       .editorConfigOverride(
         mapOf(
