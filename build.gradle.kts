@@ -11,7 +11,7 @@ plugins {
 spotless {
   kotlin {
     target("**/*.kt")
-    ktfmt.googleStyle().configure {
+    ktfmt().googleStyle().configure {
       it.setMaxWidth(80)
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
@@ -22,7 +22,7 @@ spotless {
   
   kotlinGradle {
     target("*.gradle.kts")
-    ktlint
+    ktlint()
       .setEditorConfigPath("$projectDir/.editorconfig")
       .editorConfigOverride(
         mapOf(
