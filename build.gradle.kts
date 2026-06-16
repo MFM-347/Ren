@@ -16,19 +16,7 @@ spotless {
       it.setRemoveUnusedImports(true)
       it.setManageTrailingCommas(false)
     }
-    ktlint("1.8.0")
-      .setEditorConfigPath("$projectDir/.editorconfig")
-      .editorConfigOverride(
-        mapOf(
-          "ktlint_code_style" to "intellij_idea",
-        )
-      )
-      .customRuleSets(
-        listOf(
-          "io.nlopez.compose.rules:ktlint:0.4.25"
-        )
-      )
-    }
+  }
   
   kotlinGradle {
     target("*.gradle.kts")
