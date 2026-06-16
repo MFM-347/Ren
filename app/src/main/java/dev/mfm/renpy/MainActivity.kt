@@ -1,4 +1,4 @@
-package com.example.renpy
+package dev.mfm.renpy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.renpy.ui.RenPyScreen
-import com.example.renpy.viewmodel.RenPyViewModel
+import dev.mfm.renpy.ui.RenPyScreen
+import dev.mfm.renpy.viewmodel.RenPyViewModel
 
 class MainActivity : ComponentActivity() {
 

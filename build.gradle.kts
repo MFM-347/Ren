@@ -9,16 +9,35 @@ plugins {
 spotless {
   kotlin {
     target("**/*.kt")
-    ktfmt("0.54").googleStyle().configure {
+    ktfmt("0.63").googleStyle().configure {
       it.setMaxWidth(80)
       it.setBlockIndent(2)
       it.setContinuationIndent(2)
       it.setRemoveUnusedImports(true)
       it.setManageTrailingCommas(false)
     }
-  }
+    ktlint("1.8.0")
+      .setEditorConfigPath("$projectDir/.editorconfig")
+      .editorConfigOverride(
+        mapOf(
+          "ktlint_code_style" to "intellij_idea",
+        )
+      )
+      .customRuleSets(
+        listOf(
+          "io.nlopez.compose.rules:ktlint:0.4.25"
+        )
+      )
+    }
+  
   kotlinGradle {
     target("*.gradle.kts")
-    ktlint()
+    ktlint("1.8.0")
+      .setEditorConfigPath("$projectDir/.editorconfig")
+      .editorConfigOverride(
+        mapOf(
+          "ktlint_code_style" to "intellij_idea"
+        )
+      )
+    }
   }
-}

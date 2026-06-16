@@ -1,4 +1,4 @@
-package com.example.renpy.ui
+package dev.mfm.renpy.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,9 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.renpy.data.RenameOrder
-import com.example.renpy.ui.components.PreviewItem
-import com.example.renpy.viewmodel.RenPyViewModel
+import dev.mfm.renpy.data.RenameOrder
+import dev.mfm.renpy.ui.components.PreviewItem
+import dev.mfm.renpy.viewmodel.RenPyViewModel
 
 /**
  * Top-level screen for RenPy. Mirrors the original CLI's inputs -- base name,

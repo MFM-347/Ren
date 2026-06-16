@@ -1,4 +1,4 @@
-package com.example.renpy.data
+package dev.mfm.renpy.data
 
 /**
  * Mirrors the `-r/--order` choices from the original Python CLI:

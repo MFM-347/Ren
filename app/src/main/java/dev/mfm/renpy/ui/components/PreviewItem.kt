@@ -1,4 +1,4 @@
-package com.example.renpy.ui.components
+package dev.mfm.renpy.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.renpy.data.RenamePreview
+import dev.mfm.renpy.data.RenamePreview
 
 /**
  * Single row in the rename preview list: original filename, an arrow, and the

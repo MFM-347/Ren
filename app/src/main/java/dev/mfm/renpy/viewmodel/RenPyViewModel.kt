@@ -1,4 +1,4 @@
-package com.example.renpy.viewmodel
+package dev.mfm.renpy.viewmodel
 
 import android.app.Application
 import android.content.Intent
@@ -6,9 +6,9 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.renpy.data.FileRenamer
-import com.example.renpy.data.RenameOrder
-import com.example.renpy.data.RenamePreview
+import dev.mfm.renpy.data.FileRenamer
+import dev.mfm.renpy.data.RenameOrder
+import dev.mfm.renpy.data.RenamePreview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
