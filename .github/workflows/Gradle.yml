@@ -16,21 +16,29 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up JDK
+      - name: Set up Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
 
-      - name: Set up Gradle
+      - name: Set up Gradle 9.4.1
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 9.4.1
 
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper --gradle-version 9.4.1
+      - name: Generate wrapper in temporary directory
+        run: |
+          mkdir temp
+          cd temp
 
-      - name: Commit wrapper files
+          gradle wrapper --gradle-version 9.4.1
+
+          cp gradlew ../
+          cp gradlew.bat ../
+          cp -r gradle ../
+
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -40,4 +48,6 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "chore: update Gradle wrapper to 9.4.1"
             git push
+          else
+            echo "No changes to commit"
           fi
