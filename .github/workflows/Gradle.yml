@@ -1,48 +1,43 @@
 name: Update Gradle Wrapper
 
 on:
-workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
-contents: write
+  contents: write
 
 jobs:
-update-wrapper:
-runs-on: ubuntu-latest
+  update-wrapper:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v5
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  - name: Set up JDK
-    uses: actions/setup-java@v5
-    with:
-      distribution: temurin
-      java-version: '21'
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
 
-  - name: Set up Gradle 9.4.1
-    uses: gradle/actions/setup-gradle@v4
-    with:
-      gradle-version: 9.4.1
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.4.1
 
-  - name: Generate Gradle Wrapper
-    run: |
-      gradle wrapper --gradle-version 9.4.1
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 9.4.1
 
-  - name: Commit wrapper files
-    run: |
-      git config user.name "github-actions[bot]"
-      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Commit wrapper files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      git add \
-        gradlew \
-        gradlew.bat \
-        gradle/wrapper/gradle-wrapper.jar \
-        gradle/wrapper/gradle-wrapper.properties
+          git add gradlew gradlew.bat gradle/wrapper/
 
-      git diff --cached --quiet || git commit -m "chore: update Gradle wrapper to 9.4.1"
-
-  - name: Push changes
-    run: git push
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update Gradle wrapper to 9.4.1"
+            git push
+          fi
