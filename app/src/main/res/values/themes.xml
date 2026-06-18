@@ -1,7 +1,7 @@
 <resources>
   <style
-    name="Theme.Ren"
-    parent="Theme.Material3.DayNight.NoActionBar"
+    name="AppTheme"
+    parent="Theme.Material3.Light.NoActionBar"
   >
   </style>
 </resources>
