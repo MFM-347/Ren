@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "dev.mfm.renpy"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "dev.mfm.renpy"
@@ -13,7 +13,7 @@ android {
         // floor here avoids needing legacy PNG launcher icons across
         // mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi.
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
