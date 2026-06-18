@@ -1,4 +1,4 @@
-package dev.mfm.renpy.viewmodel
+package dev.mfm.ren.viewmodel
 
 import android.app.Application
 import android.content.Intent
@@ -6,9 +6,9 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.mfm.renpy.data.FileRenamer
-import dev.mfm.renpy.data.RenameOrder
-import dev.mfm.renpy.data.RenamePreview
+import dev.mfm.ren.data.FileRenamer
+import dev.mfm.ren.data.RenameOrder
+import dev.mfm.ren.data.RenamePreview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Screen state for RenPy. [previews] is non-empty once the user has tapped
+ * Screen state for Ren. [previews] is non-empty once the user has tapped
  * "Preview"; [result] is populated after a successful (or partially successful)
  * rename pass.
  */
-data class RenPyUiState(
+data class RenUiState(
   val folderUri: Uri? = null,
   val folderName: String? = null,
   val baseName: String = "",
@@ -33,13 +33,13 @@ data class RenPyUiState(
   val error: String? = null,
 )
 
-class RenPyViewModel(application: Application) : AndroidViewModel(application) {
+class RenViewModel(application: Application) : AndroidViewModel(application) {
 
-  private val _uiState = MutableStateFlow(RenPyUiState())
-  val uiState: StateFlow<RenPyUiState> = _uiState
+  private val _uiState = MutableStateFlow(RenUiState())
+  val uiState: StateFlow<RenUiState> = _uiState
 
   companion object {
-    private const val PREFS_NAME = "renpy_prefs"
+    private const val PREFS_NAME = "Ren_prefs"
     private const val KEY_TREE_URI = "tree_uri"
   }
 

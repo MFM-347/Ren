@@ -1,4 +1,4 @@
-package dev.mfm.renpy.data
+package dev.mfm.ren.data
 
 import android.net.Uri
 

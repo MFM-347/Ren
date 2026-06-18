@@ -1,4 +1,4 @@
-package dev.mfm.renpy.ui
+package dev.mfm.ren.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,19 +37,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.mfm.renpy.data.RenameOrder
-import dev.mfm.renpy.ui.components.PreviewItem
-import dev.mfm.renpy.viewmodel.RenPyViewModel
+import dev.mfm.ren.data.RenameOrder
+import dev.mfm.ren.ui.components.PreviewItem
+import dev.mfm.ren.viewmodel.RenViewModel
 
 /**
- * Top-level screen for RenPy. Mirrors the original CLI's inputs -- base name,
+ * Top-level screen for Ren. Mirrors the original CLI's inputs -- base name,
  * target directory, and sort order -- with an additional preview/confirm step
  * required by Android's scoped storage model (there is no "simulate" flag here;
  * preview is always shown first).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RenPyScreen(viewModel: RenPyViewModel) {
+fun RenScreen(viewModel: RenViewModel) {
   val state by viewModel.uiState.collectAsState()
 
   val folderPicker =
@@ -64,7 +64,7 @@ fun RenPyScreen(viewModel: RenPyViewModel) {
   var orderMenuExpanded by remember { mutableStateOf(false) }
 
   Scaffold(
-    topBar = { TopAppBar(title = { Text("RenPy") }) },
+    topBar = { TopAppBar(title = { Text("Ren") }) },
   ) { padding ->
     Column(
       modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),

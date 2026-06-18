@@ -14,5 +14,5 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "RenPy"
+rootProject.name = "Ren"
 include(":app")

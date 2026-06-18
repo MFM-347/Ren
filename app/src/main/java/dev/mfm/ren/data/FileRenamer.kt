@@ -1,4 +1,4 @@
-package dev.mfm.renpy.data
+package dev.mfm.ren.data
 
 import android.content.Context
 import android.net.Uri
@@ -116,7 +116,7 @@ object FileRenamer {
       return RenameResult(previews.size, emptyList())
     }
 
-    val tempPrefix = "__renpy_tmp_${System.currentTimeMillis()}_"
+    val tempPrefix = "__Ren_tmp_${System.currentTimeMillis()}_"
 
     // Pass 1: move everything that needs renaming to a unique temp name.
     // `Pending.doc` tracks the resolved DocumentFile for each preview;

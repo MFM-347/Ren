@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.mfm.renpy"
+    namespace = "dev.mfm.ren"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "dev.mfm.renpy"
+        applicationId = "dev.mfm.ren"
         // Adaptive icons (mipmap-anydpi-v26) require API 26+. Raising the
         // floor here avoids needing legacy PNG launcher icons across
         // mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi.
