@@ -10,7 +10,7 @@ activityCompose = "1.13.0"
 composeBom = "2026.05.01"
 spotless = "8.6.0"
 documentfile = "1.1.0"
-googlefonts = 1.11.2
+googlefonts = "1.11.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
