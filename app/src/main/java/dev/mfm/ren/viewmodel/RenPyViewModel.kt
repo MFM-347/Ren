@@ -54,25 +54,38 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
     restorePersistedFolder()
   }
 
-  /** Loads a previously-granted SAF tree URI, if any, on app start. */
+  /**
+   * Loads a previously-granted SAF tree URI, if any, on app start. The
+   * permission check and DocumentFile.name resolution are moved to IO so
+   * the ViewModel constructor does not block the main thread during startup.
+   */
   private fun restorePersistedFolder() {
-    val prefs =
-      getApplication<Application>()
-        .getSharedPreferences(PREFS_NAME, Application.MODE_PRIVATE)
-    val saved = prefs.getString(KEY_TREE_URI, null) ?: return
-    val uri = Uri.parse(saved)
+    viewModelScope.launch {
+      val (uri, name) =
+        withContext(Dispatchers.IO) {
+          val prefs =
+            getApplication<Application>()
+              .getSharedPreferences(PREFS_NAME, Application.MODE_PRIVATE)
+          val saved = prefs.getString(KEY_TREE_URI, null) ?: return@withContext null to null
 
-    val stillGranted =
-      getApplication<Application>()
-        .contentResolver
-        .persistedUriPermissions
-        .any { it.uri == uri && it.isReadPermission && it.isWritePermission }
+          val uri = Uri.parse(saved)
+          val stillGranted =
+            getApplication<Application>()
+              .contentResolver
+              .persistedUriPermissions
+              .any { it.uri == uri && it.isReadPermission && it.isWritePermission }
 
-    if (stillGranted) {
-      val name = DocumentFile.fromTreeUri(getApplication(), uri)?.name
+          if (stillGranted) {
+            // Resolve .name on IO — it is a SAF IPC call.
+            val name = DocumentFile.fromTreeUri(getApplication(), uri)?.name
+            uri to name
+          } else {
+            prefs.edit().remove(KEY_TREE_URI).apply()
+            null to null
+          }
+        } ?: return@launch
+
       _uiState.update { it.copy(folderUri = uri, folderName = name) }
-    } else {
-      prefs.edit().remove(KEY_TREE_URI).apply()
     }
   }
 
@@ -80,6 +93,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
    * Call after the SAF folder picker returns successfully. Persists the
    * permission so it survives app restarts, clears any stale preview from a
    * previously-selected folder, and dismisses the folder validation error.
+   * DocumentFile.name is resolved on IO to avoid a SAF IPC call on the
+   * main thread.
    */
   fun onFolderSelected(uri: Uri) {
     val resolver = getApplication<Application>().contentResolver
@@ -95,16 +110,24 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
       .putString(KEY_TREE_URI, uri.toString())
       .apply()
 
-    val name = DocumentFile.fromTreeUri(getApplication(), uri)?.name
-    _uiState.update {
-      it.copy(
-        folderUri = uri,
-        folderName = name,
-        previews = emptyList(),
-        result = null,
-        error = null,
-        showFolderError = false, // user fixed it — clear the inline error
-      )
+    viewModelScope.launch {
+      // Resolve the display name off the main thread — DocumentFile.name
+      // is a SAF IPC call and should not run on the main thread.
+      val name =
+        withContext(Dispatchers.IO) {
+          DocumentFile.fromTreeUri(getApplication(), uri)?.name
+        }
+
+      _uiState.update {
+        it.copy(
+          folderUri = uri,
+          folderName = name,
+          previews = emptyList(),
+          result = null,
+          error = null,
+          showFolderError = false, // user fixed it — clear the inline error
+        )
+      }
     }
   }
 

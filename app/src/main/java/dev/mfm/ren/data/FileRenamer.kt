@@ -19,8 +19,8 @@ import androidx.documentfile.provider.DocumentFile
  * (e.g. "photo-3.jpg") already exists among the *source* files. SAF's
  * DocumentFile.renameTo behaves similarly -- some providers will throw, others
  * will create a "(1)" suffix you don't expect. To avoid that entirely,
- * [applyRenames] renames every file to a temporary, guaranteed- unique name
- * first, then renames each temp file to its final target name in a second pass.
+ * [applyRenames] renames every file to a temporary, guaranteed-unique name
+ * first, then renames each temp file to its real target name in a second pass.
  * This makes the whole operation safe even when the target name set overlaps
  * with the source name set.
  */
@@ -31,6 +31,12 @@ object FileRenamer {
    * returns the proposed rename for each one. Subdirectories are skipped
    * (DocumentFile.isFile == false), matching the original script's
    * `os.path.isfile` filter.
+   *
+   * Performance note: DocumentFile.listFiles() issues a single bulk query via
+   * the SAF ContentProvider, which is significantly cheaper than querying each
+   * child individually. We call it exactly once here and read .name and
+   * .lastModified() from the returned instances, which on most providers are
+   * populated from the same bulk cursor and do not incur additional IPC calls.
    */
   fun buildPreview(
     context: Context,
@@ -101,6 +107,11 @@ object FileRenamer {
    * its temporary name rather than silently reverted, and reported in
    * [RenameResult.failures] -- this mirrors the original script's approach of
    * printing an error and continuing rather than rolling back everything.
+   *
+   * Performance note: rather than calling listFiles() or findFile() once per
+   * file (which would be O(n²) IPC calls), we snapshot the directory into maps
+   * upfront and between passes. This reduces directory queries from O(n) down
+   * to O(1) -- two bulk listFiles() calls total regardless of file count.
    */
   fun applyRenames(
     context: Context,
@@ -118,6 +129,12 @@ object FileRenamer {
 
     val tempPrefix = "__Ren_tmp_${System.currentTimeMillis()}_"
 
+    // Snapshot the directory once into a uri→DocumentFile map so that
+    // pass 1 can resolve each file in O(1) instead of calling findFile()
+    // or listFiles() once per file (which would be O(n²) IPC calls).
+    val uriToDoc: Map<Uri, DocumentFile> =
+      root.listFiles().associateBy { it.uri }
+
     // Pass 1: move everything that needs renaming to a unique temp name.
     // `Pending.doc` tracks the resolved DocumentFile for each preview;
     // it's set to null if that document can't be found or its rename
@@ -126,8 +143,7 @@ object FileRenamer {
 
     val pending =
       toProcess.map { preview ->
-        val doc = root.findDocumentByUri(preview.uri)
-        Pending(preview, doc)
+        Pending(preview, uriToDoc[preview.uri])
       }
 
     val failures = mutableListOf<String>()
@@ -151,15 +167,20 @@ object FileRenamer {
       }
     }
 
+    // Re-snapshot the directory between passes. Some SAF providers change
+    // a document's Uri after renameTo without updating the existing
+    // DocumentFile instance, so we resolve by temp name from a fresh
+    // listing rather than reusing the stale instances from pass 1.
+    // This is one bulk IPC call instead of one findFile() call per file.
+    val nameToDoc: Map<String, DocumentFile> =
+      root.listFiles().associateBy { it.name ?: "" }
+
     // Pass 2: rename each successfully-moved temp file to its final name.
-    // Re-resolve by the known temp name rather than reusing `item.doc`,
-    // since some SAF providers change a document's Uri after renameTo
-    // without updating the existing DocumentFile instance.
     pending.forEachIndexed { index, item ->
       if (item.doc == null) return@forEachIndexed
 
       val tempName = "$tempPrefix$index"
-      val current = root.findFile(tempName)
+      val current = nameToDoc[tempName]
       if (current == null) {
         failures.add(item.preview.originalName)
         return@forEachIndexed
@@ -179,11 +200,4 @@ object FileRenamer {
     val successCount = previews.size - failures.size
     return RenameResult(successCount, failures)
   }
-
-  /**
-   * Helper to find a child DocumentFile by its content Uri. DocumentFile
-   * doesn't expose this directly, so we scan the listing.
-   */
-  private fun DocumentFile.findDocumentByUri(uri: Uri): DocumentFile? =
-    listFiles().firstOrNull { it.uri == uri }
 }
