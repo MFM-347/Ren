@@ -20,6 +20,10 @@ import kotlinx.coroutines.withContext
  * Screen state for Ren. [previews] is non-empty once the user has tapped
  * "Preview"; [result] is populated after a successful (or partially successful)
  * rename pass.
+ *
+ * [showFolderError] and [showBaseNameError] drive inline field-level validation
+ * messages in the UI instead of interrupting dialogs, so the user knows exactly
+ * which input needs attention without losing context.
  */
 data class RenUiState(
   val folderUri: Uri? = null,
@@ -31,6 +35,9 @@ data class RenUiState(
   val isApplying: Boolean = false,
   val result: FileRenamer.RenameResult? = null,
   val error: String? = null,
+  // Inline validation flags — set on failed Preview attempt, cleared on fix.
+  val showFolderError: Boolean = false,
+  val showBaseNameError: Boolean = false,
 )
 
 class RenViewModel(application: Application) : AndroidViewModel(application) {
@@ -55,8 +62,6 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
     val saved = prefs.getString(KEY_TREE_URI, null) ?: return
     val uri = Uri.parse(saved)
 
-    // Confirm we still hold a persisted permission for this URI; the
-    // user may have revoked it via system settings.
     val stillGranted =
       getApplication<Application>()
         .contentResolver
@@ -73,8 +78,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
 
   /**
    * Call after the SAF folder picker returns successfully. Persists the
-   * permission so it survives app restarts, and clears any stale preview from a
-   * previously-selected folder.
+   * permission so it survives app restarts, clears any stale preview from a
+   * previously-selected folder, and dismisses the folder validation error.
    */
   fun onFolderSelected(uri: Uri) {
     val resolver = getApplication<Application>().contentResolver
@@ -98,19 +103,25 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
         previews = emptyList(),
         result = null,
         error = null,
+        showFolderError = false,   // user fixed it — clear the inline error
       )
     }
   }
 
   fun onBaseNameChanged(value: String) {
-    _uiState.update { it.copy(baseName = value, result = null) }
+    _uiState.update {
+      it.copy(
+        baseName = value,
+        result = null,
+        showBaseNameError = false, // clear as soon as the user starts typing
+      )
+    }
   }
 
   fun onOrderChanged(order: RenameOrder) {
     _uiState.update { it.copy(order = order, result = null) }
   }
 
-  /** Clears the current preview, e.g. after editing inputs post-preview. */
   fun clearPreview() {
     _uiState.update {
       it.copy(previews = emptyList(), result = null, error = null)
@@ -118,23 +129,35 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
   }
 
   /**
-   * Builds the rename preview off the main thread (directory listing over SAF
-   * can be slow for large folders).
+   * Validates inputs inline (no dialog), then builds the rename preview off
+   * the main thread. SAF directory listing can be slow for large folders.
    */
   fun generatePreview() {
     val state = _uiState.value
-    val uri = state.folderUri
-    if (uri == null) {
-      _uiState.update { it.copy(error = "Choose a folder first.") }
-      return
-    }
-    if (state.baseName.isBlank()) {
-      _uiState.update { it.copy(error = "Enter a base name.") }
+
+    // Validate both fields before touching the filesystem, and surface errors
+    // inline rather than via a blocking dialog.
+    val folderMissing = state.folderUri == null
+    val baseNameBlank = state.baseName.isBlank()
+
+    if (folderMissing || baseNameBlank) {
+      _uiState.update {
+        it.copy(
+          showFolderError = folderMissing,
+          showBaseNameError = baseNameBlank,
+        )
+      }
       return
     }
 
     _uiState.update {
-      it.copy(isLoadingPreview = true, error = null, result = null)
+      it.copy(
+        isLoadingPreview = true,
+        error = null,
+        result = null,
+        showFolderError = false,
+        showBaseNameError = false,
+      )
     }
 
     viewModelScope.launch {
@@ -142,7 +165,7 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
         withContext(Dispatchers.IO) {
           FileRenamer.buildPreview(
             context = getApplication(),
-            treeUri = uri,
+            treeUri = state.folderUri!!,
             baseName = state.baseName.trim(),
             order = state.order,
           )
@@ -152,14 +175,12 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
         it.copy(
           previews = previews,
           isLoadingPreview = false,
-          error =
-            if (previews.isEmpty()) "No files found in this folder." else null,
+          error = if (previews.isEmpty()) "No files found in this folder." else null,
         )
       }
     }
   }
 
-  /** Applies the currently-displayed preview, performing real renames. */
   fun confirmRenames() {
     val state = _uiState.value
     val uri = state.folderUri ?: return
