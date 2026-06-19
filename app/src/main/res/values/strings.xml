@@ -18,12 +18,16 @@
     <string name="cd_folder_selected">Change folder. Selected: %1$s</string>
 
     <!-- Inline validation -->
-    <string name="error_folder_required">Select a folder before previewing.</string>
+    <string
+    name="error_folder_required"
+  >Select a folder before previewing.</string>
 
     <!-- Base name field -->
     <string name="placeholder_base_name">e.g. vacation-photo</string>
     <!-- Tells users what the output filenames will look like -->
-    <string name="hint_base_name_pattern">Files will be renamed: base-name-001.ext, base-name-002.ext…</string>
+    <string
+    name="hint_base_name_pattern"
+  >Files will be renamed: base-name-001.ext, base-name-002.ext…</string>
 
     <!-- Preview button states -->
     <string name="btn_preview">Preview</string>
@@ -39,7 +43,9 @@
     <!-- Result dialog -->
     <string name="dialog_result_title_ok">Done</string>
     <string name="dialog_result_title_partial">Completed with errors</string>
-    <string name="dialog_result_success">Renamed %1$d file(s) successfully.</string>
+    <string
+    name="dialog_result_success"
+  >Renamed %1$d file(s) successfully.</string>
     <string name="dialog_result_failures">Could not rename:\n%1$s</string>
 
     <!-- Shared -->
