@@ -6,10 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import dev.mfm.ren.ui.theme.AppTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dev.mfm.ren.ui.RenScreen
+import dev.mfm.ren.ui.theme.AppTheme
 import dev.mfm.ren.viewmodel.RenViewModel
 
 class MainActivity : ComponentActivity() {
