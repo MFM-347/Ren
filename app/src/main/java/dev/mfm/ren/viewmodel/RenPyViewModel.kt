@@ -103,7 +103,7 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
         previews = emptyList(),
         result = null,
         error = null,
-        showFolderError = false,   // user fixed it — clear the inline error
+        showFolderError = false, // user fixed it — clear the inline error
       )
     }
   }
@@ -129,8 +129,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
   }
 
   /**
-   * Validates inputs inline (no dialog), then builds the rename preview off
-   * the main thread. SAF directory listing can be slow for large folders.
+   * Validates inputs inline (no dialog), then builds the rename preview off the
+   * main thread. SAF directory listing can be slow for large folders.
    */
   fun generatePreview() {
     val state = _uiState.value
@@ -175,7 +175,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
         it.copy(
           previews = previews,
           isLoadingPreview = false,
-          error = if (previews.isEmpty()) "No files found in this folder." else null,
+          error =
+            if (previews.isEmpty()) "No files found in this folder." else null,
         )
       }
     }
