@@ -142,9 +142,7 @@ object FileRenamer {
     data class Pending(val preview: RenamePreview, var doc: DocumentFile?)
 
     val pending =
-      toProcess.map { preview ->
-        Pending(preview, uriToDoc[preview.uri])
-      }
+      toProcess.map { preview -> Pending(preview, uriToDoc[preview.uri]) }
 
     val failures = mutableListOf<String>()
 

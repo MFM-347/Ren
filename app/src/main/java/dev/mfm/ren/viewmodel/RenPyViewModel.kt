@@ -56,8 +56,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
 
   /**
    * Loads a previously-granted SAF tree URI, if any, on app start. The
-   * permission check and DocumentFile.name resolution are moved to IO so
-   * the ViewModel constructor does not block the main thread during startup.
+   * permission check and DocumentFile.name resolution are moved to IO so the
+   * ViewModel constructor does not block the main thread during startup.
    */
   private fun restorePersistedFolder() {
     viewModelScope.launch {
@@ -66,14 +66,18 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
           val prefs =
             getApplication<Application>()
               .getSharedPreferences(PREFS_NAME, Application.MODE_PRIVATE)
-          val saved = prefs.getString(KEY_TREE_URI, null) ?: return@withContext null to null
+          val saved =
+            prefs.getString(KEY_TREE_URI, null)
+              ?: return@withContext null to null
 
           val uri = Uri.parse(saved)
           val stillGranted =
             getApplication<Application>()
               .contentResolver
               .persistedUriPermissions
-              .any { it.uri == uri && it.isReadPermission && it.isWritePermission }
+              .any {
+                it.uri == uri && it.isReadPermission && it.isWritePermission
+              }
 
           if (stillGranted) {
             // Resolve .name on IO — it is a SAF IPC call.
@@ -93,8 +97,8 @@ class RenViewModel(application: Application) : AndroidViewModel(application) {
    * Call after the SAF folder picker returns successfully. Persists the
    * permission so it survives app restarts, clears any stale preview from a
    * previously-selected folder, and dismisses the folder validation error.
-   * DocumentFile.name is resolved on IO to avoid a SAF IPC call on the
-   * main thread.
+   * DocumentFile.name is resolved on IO to avoid a SAF IPC call on the main
+   * thread.
    */
   fun onFolderSelected(uri: Uri) {
     val resolver = getApplication<Application>().contentResolver
