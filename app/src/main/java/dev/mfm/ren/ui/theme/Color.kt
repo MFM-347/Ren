@@ -1,4 +1,4 @@
-package com.example.compose
+package dev.mfm.ren.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.example.compose
+package dev.mfm.ren.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
