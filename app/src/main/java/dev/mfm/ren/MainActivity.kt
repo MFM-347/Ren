@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import dev.mfm.ren.ui.theme.AppTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dev.mfm.ren.ui.RenScreen
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
     setContent {
-      MaterialTheme {
+      AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
           RenScreen(viewModel = viewModel)
         }
