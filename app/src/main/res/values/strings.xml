@@ -1,3 +1,48 @@
 <resources>
+
+    <!-- App -->
     <string name="app_name">RenDex</string>
+
+    <!-- Section labels -->
+    <string name="label_folder">Folder</string>
+    <string name="label_base_name">Base name</string>
+    <string name="label_order">Sort order</string>
+
+    <!-- Folder picker -->
+    <string name="hint_folder_none">No folder selected</string>
+    <string name="btn_choose_folder">Choose folder</string>
+    <string name="btn_change_folder">Change folder</string>
+
+    <!-- Folder picker — contentDescription (read by TalkBack as one sentence) -->
+    <string name="cd_folder_none">Choose folder. No folder selected.</string>
+    <string name="cd_folder_selected">Change folder. Selected: %1$s</string>
+
+    <!-- Inline validation -->
+    <string name="error_folder_required">Select a folder before previewing.</string>
+
+    <!-- Base name field -->
+    <string name="placeholder_base_name">e.g. vacation-photo</string>
+    <!-- Tells users what the output filenames will look like -->
+    <string name="hint_base_name_pattern">Files will be renamed: base-name-001.ext, base-name-002.ext…</string>
+
+    <!-- Preview button states -->
+    <string name="btn_preview">Preview</string>
+    <string name="btn_previewing">Previewing…</string>
+
+    <!-- Preview list -->
+    <string name="label_files_found">%1$d file(s) found</string>
+
+    <!-- Confirm button states -->
+    <string name="btn_confirm">Confirm renames</string>
+    <string name="btn_applying">Applying…</string>
+
+    <!-- Result dialog -->
+    <string name="dialog_result_title_ok">Done</string>
+    <string name="dialog_result_title_partial">Completed with errors</string>
+    <string name="dialog_result_success">Renamed %1$d file(s) successfully.</string>
+    <string name="dialog_result_failures">Could not rename:\n%1$s</string>
+
+    <!-- Shared -->
+    <string name="btn_ok">OK</string>
+
 </resources>
